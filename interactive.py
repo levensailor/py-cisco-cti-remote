@@ -18,8 +18,8 @@ datefmt='%m/%d/%Y %I:%M:%S %p',
 level=logging.INFO
 )
 
-cti_user = 'ctiuser'
-cti_pass = 'ctipassword'
+cti_user = 'presidiocti'
+cti_pass = 'presidiocti'
 
 def keypad(num):
     return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3AKeyPad"+num+"%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
@@ -38,6 +38,21 @@ def settings():
 
 def applications():
     return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3AApplications%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
+
+def enter():
+    return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavSelect%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
+
+def up():
+    return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavUp%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
+
+def down():
+    return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavDwn%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
+
+def left():
+    return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavLeft%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
+
+def right():
+    return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavRight%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
 
 def parse(response):
     if response == '<CiscoIPPhoneError Number="1" />':
@@ -79,7 +94,11 @@ while True:
     cmd, *args = shlex.split(input('> '))
 
     if cmd.isdigit():
-        remoteCTI(phone, keypad(cmd))
+        if len(cmd) == 1:
+            remoteCTI(phone, keypad(cmd))
+        else:
+            for i in range(1, int(cmd)):
+                remoteCTI(phone, down())
 
     elif cmd=='*':
         remoteCTI(phone, star())
@@ -90,11 +109,27 @@ while True:
     elif len(cmd)==2 and cmd[:1] == 's' and cmd[1:].isdigit():
         remoteCTI(phone, softkey(cmd[1:]))
 
-    elif cmd=='s' or cmd=='S':
+    elif cmd.lower() == 's' or cmd.lower() == "settings":
         remoteCTI(phone, settings())
 
-    elif cmd=='a' or cmd=='A':
+    elif cmd.lower() == 'a' or cmd.lower() == 'applications':
         remoteCTI(phone, applications())
+
+    elif cmd.lower() == 'e' or cmd.lower() == 'enter':
+        remoteCTI(phone, enter())
+
+    elif cmd.lower() == 'l' or cmd.lower() == 'left':
+        remoteCTI(phone, left())
+
+    elif cmd.lower() == 'r' or cmd.lower() == 'right':
+        remoteCTI(phone, right())
+    
+    elif cmd.lower() == 'u' or cmd.lower() == 'up':
+        remoteCTI(phone, up())
+
+    elif cmd.lower() == 'd' or cmd.lower() == 'down':
+        remoteCTI(phone, down())
+
 
     elif cmd=='exit':
         exit()

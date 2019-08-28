@@ -37,6 +37,22 @@ def settings():
 def applications():
     return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3AApplications%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
 
+def enter():
+    return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavSelect%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
+
+def up():
+    return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavUp%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
+
+def down():
+    return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavDwn%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
+
+def left():
+    return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavLeft%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
+
+def right():
+    return "XML=%3CCiscoIPPhoneExecute%3E%3CExecuteItem%20URL%3D%22Key%3ANavRight%22%2F%3E%3C%2FCiscoIPPhoneExecute%3E"
+
+
 def parse(response):
     if response == '<CiscoIPPhoneError Number="1" />':
         logging.info('Error parsing CiscoIPPhoneExecute object')
@@ -49,7 +65,7 @@ def parse(response):
     elif 'Success' in response:
         logging.info('OK')
     else:
-        logging.info(reponse)
+        logging.info(response)
 
 def remoteCTI(phone, payload):
     url = "http://"+phone+"/CGI/Execute"
@@ -61,6 +77,22 @@ def remoteCTI(phone, payload):
         logging.info(e)
     time.sleep(1)
 
+
+def alt_tftp_7960(phone):
+    remoteCTI(phone,settings())
+    remoteCTI(phone,keypad('3'))
+    for i in range(0,32):
+        remoteCTI(phone,down())
+    remoteCTI(phone,keypad('*'))
+    remoteCTI(phone,keypad('*'))
+    remoteCTI(phone,keypad('#'))
+    remoteCTI(phone,softkey('2'))
+    remoteCTI(phone,softkey('3'))
+    remoteCTI(phone,keypad('*'))
+    remoteCTI(phone,keypad('*'))
+    remoteCTI(phone,keypad('#'))
+    remoteCTI(phone,softkey('2'))
+    remoteCTI(phone,softkey('3'))
 '''
 Macros per model to wipe out ITL files
 '''
@@ -90,6 +122,9 @@ def macro8800(phone):
     remoteCTI(phone,keypad('2'))
     remoteCTI(phone,softkey('3'))
 
+
+
+
 def reset_itl(phone):
     model = phone['model']
     ip = phone['ip']
@@ -108,4 +143,6 @@ phone = {}
 phone['model'] = 'Cisco IP Phone 8851'
 phone['ip'] = '10.131.202.127'
 
-reset_itl(phone)
+# reset_itl(phone)
+
+alt_tftp_7960('10.47.11.175')
